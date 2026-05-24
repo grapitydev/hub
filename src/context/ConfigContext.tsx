@@ -15,7 +15,7 @@ function getRegistryUrl(): string {
     return (window as any).__GRAPITY_CONFIG__.remote.url;
   }
 
-  return "http://localhost:3750";
+  return "";
 }
 
 export function ConfigProvider({ children }: { children: ReactNode }) {

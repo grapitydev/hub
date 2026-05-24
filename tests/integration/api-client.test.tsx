@@ -35,7 +35,7 @@ function wrapper({ children }: { children: React.ReactNode }) {
   return <ConfigProvider>{children}</ConfigProvider>;
 }
 
-const BASE = "http://localhost:3750";
+const BASE = "";
 
 beforeEach(() => {
   lastCall = { url: "", method: "" };

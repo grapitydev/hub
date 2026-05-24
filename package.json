@@ -1,6 +1,6 @@
 {
   "name": "@grapity/hub",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "type": "module",
   "description": "Grapity Hub - Developer portal for browsing API specs",
   "license": "Apache-2.0",

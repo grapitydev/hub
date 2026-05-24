@@ -13,21 +13,56 @@ Grapity Hub - a developer portal for browsing, exploring, and comparing API spec
 
 ## Installation
 
+The Hub is typically installed alongside the CLI and Registry. It starts automatically when you run `grapity serve`.
+
 ```bash
-npm install -g @grapity/hub
+npm install -g @grapity/cli @grapity/registry @grapity/hub
 ```
 
-## Development
+## Usage
 
-The Hub expects a running Grapity Registry server (default: `http://localhost:3750`).
+### With the CLI (recommended)
+
+The Hub starts automatically alongside the Registry:
 
 ```bash
-# Start the registry first
+grapity serve                    # Registry on :3750, Hub on :3000
+grapity serve --hub-port 8080    # Custom Hub port
+grapity serve --no-hub           # Registry only, skip Hub
+```
+
+### Standalone (development)
+
+For local development with hot reload:
+
+```bash
+# Terminal 1: start the registry
 grapity serve
 
-# In another terminal, run the Hub dev server
+# Terminal 2: dev server
 npm run dev
 # => http://localhost:5173
+```
+
+### Production server
+
+Serve the built SPA with the built-in Hono server:
+
+```bash
+npm run build
+node dist/serve.js
+# => http://localhost:3000
+```
+
+Or programmatically:
+
+```typescript
+import { startHubServer } from "@grapity/hub/serve";
+
+await startHubServer({
+  port: 3000,
+  registryUrl: "http://localhost:3750",
+});
 ```
 
 ## Build
@@ -50,6 +85,7 @@ npm run test
 - Tailwind CSS 4
 - React Router DOM 7
 - shadcn/ui primitives (copied, not consumed as package)
+- Hono (production server)
 
 ## License
 

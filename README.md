@@ -2,6 +2,8 @@
 
 Grapity Hub - a developer portal for browsing, exploring, and comparing API specs registered with the Grapity Registry.
 
+**Documentation:** [grapity.dev/docs/platform/hub/using-the-hub](https://grapity.dev/docs/platform/hub/using-the-hub) · [Quickstart](https://grapity.dev/docs/getting-started/quickstart)
+
 ## Features
 
 - Browse all specs in the registry with live filtering

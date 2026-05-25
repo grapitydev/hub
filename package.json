@@ -4,6 +4,7 @@
   "type": "module",
   "description": "grapity Hub - Developer portal for browsing API specs",
   "license": "Apache-2.0",
+  "homepage": "https://grapity.dev/docs/platform/hub/using-the-hub",
   "repository": {
     "type": "git",
     "url": "https://github.com/grapitydev/hub"

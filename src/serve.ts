@@ -59,7 +59,7 @@ export async function startHubServer(userConfig?: Partial<HubConfig>) {
     port: config.port,
   });
 
-  console.log(`Grapity Hub running at http://localhost:${config.port}`);
+  console.log(`grapity Hub running at http://localhost:${config.port}`);
   console.log(`Proxying /v1/* to ${config.registryUrl}`);
 }
 

@@ -19,8 +19,9 @@ export function Header() {
             <path d="M7 24 L16 6 L25 24 L21 24 L16 14 L11 24 Z" fill="url(#logo-g)" />
             <circle cx="16" cy="24" r="2.5" fill="url(#logo-g)" />
           </svg>
-          <span className="font-display text-lg font-semibold tracking-tight text-text-primary">
-            Grapity Hub
+          <span className="font-display text-lg font-semibold tracking-tight">
+            <span className="text-text-primary">grapity</span>{" "}
+            <span className="text-text-secondary">Hub</span>
           </span>
         </Link>
 

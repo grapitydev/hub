@@ -17,7 +17,7 @@ export function VersionPage() {
   const { spec } = useSpec(name!);
   const { versions } = useVersions(name!);
   const { version, loading: versionLoading, error: versionError } = useVersion(name!, semver!);
-  const { report } = useCompatReport(name!, semver!);
+  const { report } = useCompatReport(name!, semver!, !!version?.previousVersion);
   const { content: jsonContent, loading: jsonLoading } = useSpecContent(name!, semver!, "json");
   const { content: yamlContent, loading: yamlLoading } = useSpecContent(name!, semver!, "yaml");
   const { setEndpoints } = useSpecExplorer();

@@ -9,6 +9,7 @@ export function useVersion(name: string, semver: string) {
   const client = useApiClient();
 
   useEffect(() => {
+    setVersion(null);
     setLoading(true);
     setError(null);
     client
@@ -18,5 +19,7 @@ export function useVersion(name: string, semver: string) {
       .finally(() => setLoading(false));
   }, [name, semver]);
 
-  return { version, loading, error };
+  const validVersion = version?.semver === semver ? version : null;
+
+  return { version: validVersion, loading, error };
 }

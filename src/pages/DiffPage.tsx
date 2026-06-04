@@ -13,13 +13,18 @@ export function DiffPage() {
   const [versionA, setVersionA] = useState("");
   const [versionB, setVersionB] = useState("");
 
+  const versionAObj = versions.find((v) => v.semver === versionA);
+  const versionBObj = versions.find((v) => v.semver === versionB);
+
   const { report: reportA, loading: loadingA } = useCompatReport(
     name!,
-    versionA || "0.0.0"
+    versionA,
+    !!versionAObj?.previousVersion
   );
   const { report: reportB, loading: loadingB } = useCompatReport(
     name!,
-    versionB || "0.0.0"
+    versionB,
+    !!versionBObj?.previousVersion
   );
 
   const versionOptions = versions.map((v) => v.semver);

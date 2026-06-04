@@ -10,6 +10,8 @@ export function useSpec(name: string) {
   const client = useApiClient();
 
   useEffect(() => {
+    setSpec(null);
+    setLatestVersion(null);
     setLoading(true);
     setError(null);
     client

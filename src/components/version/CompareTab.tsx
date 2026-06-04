@@ -14,10 +14,18 @@ interface CompareTabProps {
 export function CompareTab({ versions, specName, currentSemver }: CompareTabProps) {
   const [compareVersion, setCompareVersion] = useState("");
 
-  const { report: currentReport, loading: currentLoading } = useCompatReport(specName, currentSemver);
+  const currentVersion = versions.find((v) => v.semver === currentSemver);
+  const compareVersionObj = versions.find((v) => v.semver === compareVersion);
+
+  const { report: currentReport, loading: currentLoading } = useCompatReport(
+    specName,
+    currentSemver,
+    !!currentVersion?.previousVersion
+  );
   const { report: compareReport, loading: compareLoading } = useCompatReport(
     specName,
-    compareVersion || "0.0.0"
+    compareVersion,
+    !!compareVersionObj?.previousVersion
   );
 
   const otherVersions = versions.filter((v) => v.semver !== currentSemver);

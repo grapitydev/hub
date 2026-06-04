@@ -10,6 +10,8 @@ export function useVersions(name: string) {
   const client = useApiClient();
 
   useEffect(() => {
+    setVersions([]);
+    setPagination(null);
     setLoading(true);
     setError(null);
     client

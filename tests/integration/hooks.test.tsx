@@ -156,6 +156,38 @@ describe("useCompatReport", () => {
     expect(result.current.report?.classification).toBe("minor");
     expect(result.current.report?.safeChanges).toHaveLength(1);
   });
+
+  test("does not fetch when semver is empty", async () => {
+    let fetchCalled = false;
+    global.fetch = (async () => {
+      fetchCalled = true;
+      return new Response("{}", { status: 200 });
+    }) as unknown as typeof globalThis.fetch;
+
+    const { result } = renderHook(() => useCompatReport("payments-api", ""), { wrapper });
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(fetchCalled).toBe(false);
+    expect(result.current.report).toBeNull();
+    expect(result.current.error).toBeNull();
+  });
+
+  test("does not fetch when enabled is false", async () => {
+    let fetchCalled = false;
+    global.fetch = (async () => {
+      fetchCalled = true;
+      return new Response("{}", { status: 200 });
+    }) as unknown as typeof globalThis.fetch;
+
+    const { result } = renderHook(() => useCompatReport("payments-api", "1.1.0", false), { wrapper });
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(fetchCalled).toBe(false);
+    expect(result.current.report).toBeNull();
+    expect(result.current.error).toBeNull();
+  });
 });
 
 describe("useSpecContent", () => {

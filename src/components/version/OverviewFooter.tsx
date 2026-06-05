@@ -2,7 +2,7 @@ import { ExternalLink, Mail } from "lucide-react";
 
 export function OverviewFooter() {
   return (
-    <footer className="mt-20 border-t border-surface-border pt-6 pb-2">
+    <footer className="mt-20 border-t border-surface-border pt-6 pb-10 min-h-32">
       <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
         <div className="flex items-center gap-4">
           <span className="text-sm font-medium text-text-secondary">Grapity</span>

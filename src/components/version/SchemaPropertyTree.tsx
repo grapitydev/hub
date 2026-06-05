@@ -23,7 +23,7 @@ export function SchemaPropertyTree({ properties }: SchemaPropertyTreeProps) {
             <p className="text-xs text-text-secondary">{prop.description}</p>
           )}
           {prop.properties && prop.properties.length > 0 && (
-            <div className="ml-4 border-l border-surface-border pl-3 mt-1">
+            <div className="ml-4 pl-3 mt-1">
               <SchemaPropertyTree properties={prop.properties} />
             </div>
           )}

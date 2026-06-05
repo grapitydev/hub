@@ -491,7 +491,6 @@ describe("VersionPage — /specs/:name/versions/:semver", () => {
     render(<VersionPage />, { wrapper: Wrapper });
 
     await waitFor(() => {
-      expect(screen.getByText(/Example Request/i)).toBeTruthy();
       expect(screen.getByText(/curl -X POST/i)).toBeTruthy();
       expect(screen.getByText(/https:\/\/api\.example\.com\/v1\/accounts/i)).toBeTruthy();
     });
@@ -528,7 +527,6 @@ describe("VersionPage — /specs/:name/versions/:semver", () => {
     render(<VersionPage />, { wrapper: Wrapper });
 
     await waitFor(() => {
-      expect(screen.getAllByText(/Example Response/i).length).toBeGreaterThanOrEqual(1);
       expect(screen.getByText(/acc_123/i)).toBeTruthy();
       expect(screen.getByText(/acc_new456/i)).toBeTruthy();
     });

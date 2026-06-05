@@ -47,13 +47,8 @@ function buildCurl(endpoint: Endpoint): string {
 }
 
 export function EndpointCard({ endpoint }: { endpoint: Endpoint }) {
-  const responsesWithExamples = endpoint.responses.filter((r) => r.exampleBody);
-
   return (
-    <div
-      id={endpoint.id}
-      className="rounded-md border border-surface-border bg-surface-base p-4 transition-colors hover:border-surface-hover"
-    >
+    <div id={endpoint.id}>
       <div className="flex items-center gap-3 mb-2">
         <MethodBadge method={endpoint.method} />
         <code className="font-mono text-sm text-text-primary">{endpoint.path}</code>
@@ -69,92 +64,96 @@ export function EndpointCard({ endpoint }: { endpoint: Endpoint }) {
         </div>
       )}
 
-      {endpoint.requestBody && (
-        <div className="mt-3 border-t border-surface-border pt-3">
-          <h4 className="text-xs font-semibold uppercase tracking-wider text-text-secondary mb-2">
-            Request Body
-            {endpoint.requestBody.required && <span className="text-accent-rose ml-1">*</span>}
-          </h4>
-          <SchemaPropertyTree properties={endpoint.requestBody.properties} />
-        </div>
-      )}
+      <div className="pl-4">
+        {endpoint.requestBody && endpoint.exampleRequest && (
+          <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-text-secondary mb-2">
+                Request Body
+                {endpoint.requestBody.required && <span className="text-accent-rose ml-1">*</span>}
+              </h4>
+              <SchemaPropertyTree properties={endpoint.requestBody.properties} />
+            </div>
+            <CodeBlock content={buildCurl(endpoint)} language="bash" />
+          </div>
+        )}
 
-      {endpoint.responses.length > 0 && (
-        <div className="mt-3 border-t border-surface-border pt-3">
-          <h4 className="text-xs font-semibold uppercase tracking-wider text-text-secondary mb-2">
-            Responses
-          </h4>
-          <div className="space-y-3">
-            {endpoint.responses.map((resp) => (
-              <div key={resp.status}>
-                <div className="flex items-baseline gap-2 mb-1">
-                  <span
-                    className={`rounded px-1.5 py-0.5 font-mono text-xs font-semibold ${
-                      resp.status.startsWith("2")
-                        ? "bg-green-500/10 text-green-400"
-                        : resp.status.startsWith("4")
-                          ? "bg-red-500/10 text-red-400"
-                          : "bg-surface-hover text-text-secondary"
-                    }`}
-                  >
-                    {resp.status}
-                  </span>
-                  <span className="text-sm text-text-secondary">{resp.description}</span>
+        {endpoint.requestBody && !endpoint.exampleRequest && (
+          <div className="mt-6">
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-text-secondary mb-2">
+              Request Body
+              {endpoint.requestBody.required && <span className="text-accent-rose ml-1">*</span>}
+            </h4>
+            <SchemaPropertyTree properties={endpoint.requestBody.properties} />
+          </div>
+        )}
+
+        {!endpoint.requestBody && endpoint.exampleRequest && (
+          <div className="mt-6">
+            <CodeBlock content={buildCurl(endpoint)} language="bash" />
+          </div>
+        )}
+
+        {endpoint.responses.length > 0 && (
+          <div className="mt-6">
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-text-secondary mb-2">
+              Responses
+            </h4>
+            <div className="space-y-6">
+              {endpoint.responses.map((resp) => (
+                <div key={resp.status}>
+                  {resp.exampleBody ? (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      <div>
+                        <div className="flex items-baseline gap-2 mb-1">
+                          <span
+                            className={`rounded px-1.5 py-0.5 font-mono text-xs font-semibold ${
+                              resp.status.startsWith("2")
+                                ? "bg-green-500/10 text-green-400"
+                                : resp.status.startsWith("4")
+                                  ? "bg-red-500/10 text-red-400"
+                                  : "bg-surface-hover text-text-secondary"
+                            }`}
+                          >
+                            {resp.status}
+                          </span>
+                          <span className="text-sm text-text-secondary">{resp.description}</span>
+                        </div>
+                        {resp.properties && resp.properties.length > 0 && (
+                          <SchemaPropertyTree properties={resp.properties} />
+                        )}
+                      </div>
+                      <CodeBlock content={resp.exampleBody} language="json" />
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex items-baseline gap-2 mb-1">
+                        <span
+                          className={`rounded px-1.5 py-0.5 font-mono text-xs font-semibold ${
+                            resp.status.startsWith("2")
+                              ? "bg-green-500/10 text-green-400"
+                              : resp.status.startsWith("4")
+                                ? "bg-red-500/10 text-red-400"
+                                : "bg-surface-hover text-text-secondary"
+                          }`}
+                        >
+                          {resp.status}
+                        </span>
+                        <span className="text-sm text-text-secondary">{resp.description}</span>
+                      </div>
+                      {resp.properties && resp.properties.length > 0 && (
+                        <div className="ml-2">
+                          <SchemaPropertyTree properties={resp.properties} />
+                        </div>
+                      )}
+                    </>
+                  )}
                 </div>
-                {resp.properties && resp.properties.length > 0 && (
-                  <div className="ml-2">
-                    <SchemaPropertyTree properties={resp.properties} />
-                  </div>
-                )}
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      )}
-
-      {endpoint.exampleRequest && (
-        <div className="mt-3 border-t border-surface-border pt-3">
-          <h4 className="text-xs font-semibold uppercase tracking-wider text-text-secondary mb-2">
-            Example Request
-          </h4>
-          <div className="relative rounded-md border border-surface-border bg-surface-code">
-            <pre className="overflow-auto p-4 text-xs font-mono leading-relaxed text-text-primary">
-              <code>{buildCurl(endpoint)}</code>
-            </pre>
-          </div>
-        </div>
-      )}
-
-      {responsesWithExamples.length > 0 && (
-        <div className="mt-3 border-t border-surface-border pt-3">
-          <h4 className="text-xs font-semibold uppercase tracking-wider text-text-secondary mb-2">
-            Example Response
-          </h4>
-          <div className="space-y-3">
-            {responsesWithExamples.map((resp) => (
-              <div key={resp.status}>
-                <div className="flex items-baseline gap-2 mb-1">
-                  <span
-                    className={`rounded px-1.5 py-0.5 font-mono text-xs font-semibold ${
-                      resp.status.startsWith("2")
-                        ? "bg-green-500/10 text-green-400"
-                        : resp.status.startsWith("4")
-                          ? "bg-red-500/10 text-red-400"
-                          : "bg-surface-hover text-text-secondary"
-                    }`}
-                  >
-                    {resp.status}
-                  </span>
-                  <span className="text-xs text-text-secondary">{resp.description}</span>
-                </div>
-                {resp.exampleBody && (
-                  <CodeBlock content={resp.exampleBody} language="json" />
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

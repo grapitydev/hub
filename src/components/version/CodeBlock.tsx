@@ -2,13 +2,13 @@ import { CopyButton } from "../ui/CopyButton";
 
 interface CodeBlockProps {
   content: string;
-  language: "json" | "yaml";
+  language: string;
   showCopy?: boolean;
   className?: string;
 }
 
 export function CodeBlock({ content, language, showCopy = true, className = "" }: CodeBlockProps) {
-  function highlight(content: string, lang: "json" | "yaml") {
+  function highlight(content: string, lang: string) {
     if (lang === "json") {
       try {
         return JSON.stringify(JSON.parse(content), null, 2);

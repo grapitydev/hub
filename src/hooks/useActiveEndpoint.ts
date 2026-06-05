@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export function useActiveEndpoint(endpointIds: string[]) {
+export function useActiveEndpoint(endpointIds: string[], suppressed: boolean) {
   const [activeId, setActiveId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -10,20 +10,22 @@ export function useActiveEndpoint(endpointIds: string[]) {
       return;
     }
 
+    const root = mainEl;
+
     function onScroll() {
-      if (!mainEl) return;
-      const mainRect = mainEl.getBoundingClientRect();
-      const offset = mainRect.height * 0.45;
+      if (suppressed) return;
+
+      const mainRect = root.getBoundingClientRect();
+      const threshold = mainRect.top + 60;
 
       let currentId: string | null = null;
 
       for (const id of endpointIds) {
         const el = document.getElementById(id);
         if (!el) continue;
-        const elRect = el.getBoundingClientRect();
-        const relativeTop = elRect.top - mainRect.top;
+        const top = el.getBoundingClientRect().top;
 
-        if (relativeTop <= offset) {
+        if (top <= threshold) {
           currentId = id;
         } else {
           break;
@@ -37,7 +39,7 @@ export function useActiveEndpoint(endpointIds: string[]) {
     onScroll();
 
     return () => mainEl.removeEventListener("scroll", onScroll);
-  }, [endpointIds]);
+  }, [endpointIds, suppressed]);
 
   return activeId;
 }

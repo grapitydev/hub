@@ -21,6 +21,9 @@ export default {
         },
         accent: {
           indigo: "var(--accent-indigo)",
+          "indigo-light": "var(--accent-indigo-light)",
+          "indigo-muted": "var(--accent-indigo-muted)",
+          blue: "var(--accent-blue)",
           cyan: "var(--accent-cyan)",
           green: "var(--accent-green)",
           rose: "var(--accent-rose)",

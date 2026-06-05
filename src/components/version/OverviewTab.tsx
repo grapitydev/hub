@@ -1,5 +1,6 @@
 import { useMemo, useEffect } from "react";
 import { EndpointList } from "./EndpointList";
+import { OverviewFooter } from "./OverviewFooter";
 import { Skeleton } from "../ui/skeleton";
 import { useSpecExplorer } from "../../context/SpecExplorerContext";
 import { useActiveEndpoint } from "../../hooks/useActiveEndpoint";
@@ -12,14 +13,14 @@ interface OverviewTabProps {
 }
 
 export function OverviewTab({ version, jsonLoading }: OverviewTabProps) {
-  const { endpoints, setActiveEndpointId } = useSpecExplorer();
+  const { endpoints, setActiveEndpointId, scrollSuppressed } = useSpecExplorer();
 
   const endpointIds = useMemo(
     () => endpoints?.flatMap((g) => g.endpoints.map((e) => e.id)) ?? [],
     [endpoints]
   );
 
-  const activeId = useActiveEndpoint(endpointIds);
+  const activeId = useActiveEndpoint(endpointIds, scrollSuppressed);
 
   useEffect(() => {
     setActiveEndpointId(activeId);
@@ -96,6 +97,7 @@ export function OverviewTab({ version, jsonLoading }: OverviewTabProps) {
             No endpoints found in this spec.
           </p>
         )}
+        <OverviewFooter />
       </div>
     </div>
   );

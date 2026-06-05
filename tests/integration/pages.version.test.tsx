@@ -262,7 +262,7 @@ describe("VersionPage — /specs/:name/versions/:semver", () => {
 
     await waitFor(() => {
       expect(screen.getByText(/Overview/i)).toBeTruthy();
-      expect(screen.getByText(/Compat Report/i)).toBeTruthy();
+      expect(screen.getByText(/Changelog/i)).toBeTruthy();
       expect(screen.getByText(/Versions/i)).toBeTruthy();
       expect(screen.getByText(/Compare/i)).toBeTruthy();
       expect(screen.getByText(/Raw Spec/i)).toBeTruthy();

@@ -53,6 +53,8 @@ interface SpecExplorerContextValue {
   setEndpoints: (endpoints: EndpointGroup[] | null) => void;
   activeEndpointId: string | null;
   setActiveEndpointId: (id: string | null) => void;
+  scrollSuppressed: boolean;
+  setScrollSuppressed: (v: boolean) => void;
 }
 
 const SpecExplorerContext = createContext<SpecExplorerContextValue | null>(null);
@@ -60,9 +62,10 @@ const SpecExplorerContext = createContext<SpecExplorerContextValue | null>(null)
 export function SpecExplorerProvider({ children }: { children: ReactNode }) {
   const [endpoints, setEndpoints] = useState<EndpointGroup[] | null>(null);
   const [activeEndpointId, setActiveEndpointId] = useState<string | null>(null);
+  const [scrollSuppressed, setScrollSuppressed] = useState(false);
 
   return (
-    <SpecExplorerContext.Provider value={{ endpoints, setEndpoints, activeEndpointId, setActiveEndpointId }}>
+    <SpecExplorerContext.Provider value={{ endpoints, setEndpoints, activeEndpointId, setActiveEndpointId, scrollSuppressed, setScrollSuppressed }}>
       {children}
     </SpecExplorerContext.Provider>
   );

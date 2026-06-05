@@ -17,6 +17,9 @@
   --color-text-inverse: var(--text-inverse);
 
   --color-accent-indigo: var(--accent-indigo);
+  --color-accent-indigo-light: var(--accent-indigo-light);
+  --color-accent-indigo-muted: var(--accent-indigo-muted);
+  --color-accent-blue: var(--accent-blue);
   --color-accent-cyan: var(--accent-cyan);
   --color-accent-green: var(--accent-green);
   --color-accent-rose: var(--accent-rose);
@@ -37,6 +40,9 @@
   --text-inverse: #0a0a0f;
 
   --accent-indigo: #6366f1;
+  --accent-indigo-light: #818cf8;
+  --accent-indigo-muted: #a5b4fc;
+  --accent-blue: #3b82f6;
   --accent-cyan: #06b6d4;
   --accent-green: #a5f3c4;
   --accent-rose: #f43f5e;
@@ -57,6 +63,9 @@
   --text-inverse: #ffffff;
 
   --accent-indigo: #6366f1;
+  --accent-indigo-light: #818cf8;
+  --accent-indigo-muted: #a5b4fc;
+  --accent-blue: #2563eb;
   --accent-cyan: #06b6d4;
   --accent-green: #22c55e;
   --accent-rose: #e11d48;

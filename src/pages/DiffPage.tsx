@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { useVersions } from "../hooks/useVersions";
 import { useCompatReport } from "../hooks/useCompatReport";
 import { Select, SelectItem } from "../components/ui/select";
-import { CompatReport } from "../components/version/CompatReport";
+import { Changelog } from "../components/version/Changelog";
 import { Card } from "../components/ui/card";
 
 export function DiffPage() {
@@ -94,7 +94,7 @@ export function DiffPage() {
             {loadingA ? (
               <div className="h-32 rounded bg-surface-hover animate-pulse" />
             ) : (
-              <CompatReport report={reportA} />
+              <Changelog report={reportA} />
             )}
           </Card>
 
@@ -107,7 +107,7 @@ export function DiffPage() {
             {loadingB ? (
               <div className="h-32 rounded bg-surface-hover animate-pulse" />
             ) : (
-              <CompatReport report={reportB} />
+              <Changelog report={reportB} />
             )}
           </Card>
         </div>

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useCompatReport } from "../../hooks/useCompatReport";
 import { Select, SelectItem } from "../ui/select";
-import { CompatReport } from "./CompatReport";
+import { Changelog } from "./Changelog";
 import { Card } from "../ui/card";
 import type { PublicSpecVersion } from "@grapity/core";
 
@@ -68,7 +68,7 @@ export function CompareTab({ versions, specName, currentSemver }: CompareTabProp
             {currentLoading ? (
               <div className="h-32 rounded bg-surface-hover animate-pulse" />
             ) : (
-              <CompatReport report={currentReport} />
+              <Changelog report={currentReport} />
             )}
           </Card>
 
@@ -81,7 +81,7 @@ export function CompareTab({ versions, specName, currentSemver }: CompareTabProp
             {compareLoading ? (
               <div className="h-32 rounded bg-surface-hover animate-pulse" />
             ) : (
-              <CompatReport report={compareReport} />
+              <Changelog report={compareReport} />
             )}
           </Card>
         </div>

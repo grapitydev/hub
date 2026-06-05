@@ -1,5 +1,5 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "../ui/tabs";
-import { CompatReport } from "./CompatReport";
+import { Changelog } from "./Changelog";
 import { OverviewTab } from "./OverviewTab";
 import { RawSpecTab } from "./RawSpecTab";
 import { VersionsTab } from "./VersionsTab";
@@ -35,7 +35,7 @@ export function VersionDetail({
     <Tabs defaultTab="overview">
       <TabsList>
         <TabsTrigger value="overview">Overview</TabsTrigger>
-        <TabsTrigger value="compat">Compat Report</TabsTrigger>
+        <TabsTrigger value="compat">Changelog</TabsTrigger>
         <TabsTrigger value="versions">Versions</TabsTrigger>
         <TabsTrigger value="compare">Compare</TabsTrigger>
         <TabsTrigger value="raw">Raw Spec</TabsTrigger>
@@ -46,7 +46,7 @@ export function VersionDetail({
       </TabsContent>
 
       <TabsContent value="compat">
-        <CompatReport report={compatReport} isInitial={isInitial} />
+        <Changelog report={compatReport} isInitial={isInitial} />
       </TabsContent>
 
       <TabsContent value="versions">

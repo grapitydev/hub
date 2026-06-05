@@ -17,7 +17,7 @@ export function Sidebar({ filters }: SidebarProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
-  const { endpoints, activeEndpointId } = useSpecExplorer();
+  const { endpoints, activeEndpointId, setActiveEndpointId, setScrollSuppressed } = useSpecExplorer();
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
 
   // Expand all groups when endpoints load
@@ -70,11 +70,14 @@ export function Sidebar({ filters }: SidebarProps) {
   }
 
   function scrollToEndpoint(id: string) {
+    setActiveEndpointId(id);
+    setScrollSuppressed(true);
     const el = document.getElementById(id);
     if (el) {
       el.scrollIntoView({ behavior: "smooth", block: "start" });
     }
     setIsOpen(false);
+    setTimeout(() => setScrollSuppressed(false), 400);
   }
 
   return (

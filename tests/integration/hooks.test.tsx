@@ -145,7 +145,7 @@ describe("useCompatReport", () => {
       previousVersion: "1.0.0",
       classification: "minor",
       breakingChanges: [],
-      safeChanges: [{ id: "1", rule: "endpoint-added", description: "Added GET /payments", path: "/payments" }],
+      safeChanges: [{ id: "1", rule: "endpoint-added", description: "Added GET /payments", path: "/payments", category: "structural" }],
     };
     mockFetchJson(200, { data: report });
 

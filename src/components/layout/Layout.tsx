@@ -8,7 +8,8 @@ interface LayoutProps {
     type?: string;
     owner?: string;
     tags?: string[];
-    onFilterChange: (filters: { type?: string; owner?: string; tags?: string[] }) => void;
+    classification?: string;
+    onFilterChange: (filters: { type?: string; owner?: string; tags?: string[]; classification?: string }) => void;
   };
 }
 

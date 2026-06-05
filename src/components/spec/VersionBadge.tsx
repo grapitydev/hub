@@ -1,4 +1,5 @@
 import type { VersionClassification } from "@grapity/core";
+import { getClassificationPillStyle } from "../../lib/classificationStyles";
 
 interface VersionBadgeProps {
   semver: string;
@@ -7,18 +8,11 @@ interface VersionBadgeProps {
   isPrerelease?: boolean;
 }
 
-const pillStyles: Record<VersionClassification, string> = {
-  initial: "bg-accent-indigo/15 text-accent-indigo",
-  major: "bg-accent-indigo/15 text-accent-indigo",
-  minor: "bg-accent-blue/15 text-accent-blue",
-  patch: "bg-accent-cyan/15 text-accent-cyan",
-};
-
 export function VersionBadge({ semver, classification, date, isPrerelease }: VersionBadgeProps) {
   return (
     <div className="flex items-center gap-2">
       <span
-        className={`inline-flex items-center rounded-md px-2 py-0.5 font-mono text-xs font-bold ${pillStyles[classification]}`}
+        className={`inline-flex items-center rounded-md px-2 py-0.5 font-mono text-xs font-bold ${getClassificationPillStyle(classification)}`}
       >
         {semver}
       </span>

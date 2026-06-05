@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { SpecCard } from "../spec/SpecCard";
 import { Skeleton } from "../ui/skeleton";
-import type { Spec } from "@grapity/core";
+import type { SpecListItem } from "@grapity/core";
 
 interface SpecListProps {
-  specs: Spec[];
+  specs: SpecListItem[];
   loading: boolean;
   searchQuery: string;
 }
@@ -50,7 +50,18 @@ export function SpecList({ specs, loading, searchQuery }: SpecListProps) {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {filtered.map((spec) => (
-        <SpecCard key={spec.id} spec={spec} latestVersion={undefined} />
+        <SpecCard
+          key={spec.id}
+          spec={spec}
+          latestVersion={
+            spec.latestVersion
+              ? {
+                  semver: spec.latestVersion.semver,
+                  classification: spec.latestVersion.compatibility?.classification,
+                }
+              : undefined
+          }
+        />
       ))}
     </div>
   );

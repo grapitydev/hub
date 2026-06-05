@@ -1,17 +1,30 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Search } from "lucide-react";
 import { useSpecs } from "../hooks/useSpecs";
 import { SpecList } from "../components/spec/SpecList";
 import { Input } from "../components/ui/input";
 
 interface SpecListPageProps {
-  filters?: { type?: string; owner?: string; tags?: string[] };
+  filters?: { type?: string; owner?: string; tags?: string[]; classification?: string };
 }
 
 export function SpecListPage({ filters = {} }: SpecListPageProps) {
   const [searchQuery, setSearchQuery] = useState("");
 
-  const { specs, loading, error } = useSpecs(filters);
+  const { classification, ...serverFilters } = filters;
+  const { specs, loading, error } = useSpecs(serverFilters);
+
+  const filteredSpecs = useMemo(() => {
+    if (!classification) return specs;
+    const matchMap: Record<string, string[]> = {
+      major: ["initial", "major"],
+      minor: ["minor"],
+      patch: ["patch"],
+    };
+    const allowed = matchMap[classification];
+    if (!allowed) return specs;
+    return specs.filter((s) => allowed.includes(s.latestVersion?.compatibility?.classification ?? ""));
+  }, [specs, classification]);
 
   if (error) {
     return (
@@ -29,7 +42,7 @@ export function SpecListPage({ filters = {} }: SpecListPageProps) {
           Browse All Specs
         </h1>
         <p className="text-sm text-text-secondary">
-          {specs.length} spec{specs.length !== 1 ? "s" : ""} in the registry
+          {filteredSpecs.length} spec{filteredSpecs.length !== 1 ? "s" : ""} in the registry
         </p>
       </div>
 
@@ -44,7 +57,7 @@ export function SpecListPage({ filters = {} }: SpecListPageProps) {
         />
       </div>
 
-      <SpecList specs={specs} loading={loading} searchQuery={searchQuery} />
+      <SpecList specs={filteredSpecs} loading={loading} searchQuery={searchQuery} />
     </div>
   );
 }

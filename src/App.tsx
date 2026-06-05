@@ -14,6 +14,7 @@ export default function App() {
     type?: string;
     owner?: string;
     tags?: string[];
+    classification?: string;
   }>({});
 
   return (

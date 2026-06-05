@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useApiClient } from "../api/client";
-import type { Spec } from "@grapity/core";
+import type { SpecListItem } from "@grapity/core";
 
 export function useSpecs(filters?: { type?: string; owner?: string; tags?: string[] }) {
-  const [specs, setSpecs] = useState<Spec[]>([]);
+  const [specs, setSpecs] = useState<SpecListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const client = useApiClient();

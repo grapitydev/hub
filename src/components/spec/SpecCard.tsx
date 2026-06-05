@@ -1,11 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { Badge } from "../ui/badge";
 import { Card } from "../ui/card";
-import type { Spec } from "@grapity/core";
+import type { Spec, VersionClassification } from "@grapity/core";
+import { getClassificationPillStyle } from "../../lib/classificationStyles";
 
 interface SpecCardProps {
   spec: Spec;
-  latestVersion?: string;
+  latestVersion?: { semver: string; classification?: VersionClassification };
 }
 
 export function SpecCard({ spec, latestVersion }: SpecCardProps) {
@@ -19,7 +20,9 @@ export function SpecCard({ spec, latestVersion }: SpecCardProps) {
       <div className="flex items-start justify-between mb-3">
         <Badge variant="indigo">{spec.type}</Badge>
         {latestVersion && (
-          <span className="text-xs text-text-secondary font-mono">{latestVersion}</span>
+          <span className={`inline-flex items-center rounded-md px-2 py-0.5 font-mono text-xs font-bold ${getClassificationPillStyle(latestVersion.classification)}`}>
+            {latestVersion.semver}
+          </span>
         )}
       </div>
 

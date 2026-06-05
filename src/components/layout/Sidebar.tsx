@@ -1,15 +1,17 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { ArrowLeft, Filter, Tag, User, FileJson, ChevronRight, ChevronDown } from "lucide-react";
+import { ArrowLeft, Filter, Tag, User, FileJson, ChevronRight, ChevronDown, Layers } from "lucide-react";
 import { Button } from "../ui/button";
 import { useSpecExplorer } from "../../context/SpecExplorerContext";
+import { getClassificationPillStyle } from "../../lib/classificationStyles";
 
 interface SidebarProps {
   filters?: {
     type?: string;
     owner?: string;
     tags?: string[];
-    onFilterChange: (filters: { type?: string; owner?: string; tags?: string[] }) => void;
+    classification?: string;
+    onFilterChange: (filters: { type?: string; owner?: string; tags?: string[]; classification?: string }) => void;
   };
 }
 
@@ -254,6 +256,40 @@ export function Sidebar({ filters }: SidebarProps) {
                         }`}
                       >
                         {tag}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div>
+                <h3 className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-text-secondary">
+                  <Layers className="h-3 w-3" />
+                  Classification
+                </h3>
+                <div className="flex flex-wrap gap-1">
+                  {[
+                    { key: "major", label: "Major", match: ["initial", "major"] },
+                    { key: "minor", label: "Minor", match: ["minor"] },
+                    { key: "patch", label: "Patch", match: ["patch"] },
+                  ].map((item) => {
+                    const isSelected = filters.classification === item.key;
+                    return (
+                      <button
+                        key={item.key}
+                        onClick={() =>
+                          filters.onFilterChange({
+                            ...filters,
+                            classification: isSelected ? undefined : item.key,
+                          })
+                        }
+                        className={`inline-flex items-center rounded-sm px-2 py-0.5 text-xs font-bold transition-colors ${
+                          isSelected
+                            ? getClassificationPillStyle(item.key as "major" | "minor" | "patch")
+                            : "bg-surface-hover text-text-secondary hover:text-text-primary"
+                        }`}
+                      >
+                        {item.label}
                       </button>
                     );
                   })}

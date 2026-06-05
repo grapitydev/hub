@@ -8,7 +8,7 @@ import { useVersions } from "../../src/hooks/useVersions";
 import { useVersion } from "../../src/hooks/useVersion";
 import { useCompatReport } from "../../src/hooks/useCompatReport";
 import { useSpecContent } from "../../src/hooks/useSpecContent";
-import type { Spec, PublicSpecVersion, CompatReport } from "@grapity/core";
+import type { Spec, SpecListItem, PublicSpecVersion, CompatReport } from "@grapity/core";
 
 function wrapper({ children }: { children: React.ReactNode }) {
   return <ConfigProvider>{children}</ConfigProvider>;
@@ -36,8 +36,8 @@ beforeEach(() => {
 
 describe("useSpecs", () => {
   test("starts loading then returns specs on success", async () => {
-    const specs: Spec[] = [
-      { id: "1", name: "payments-api", type: "openapi" as const, tags: [], createdAt: new Date("2026-01-01T00:00:00Z"), updatedAt: new Date("2026-01-01T00:00:00Z") },
+    const specs: SpecListItem[] = [
+      { id: "1", name: "payments-api", type: "openapi" as const, tags: [], createdAt: new Date("2026-01-01T00:00:00Z"), updatedAt: new Date("2026-01-01T00:00:00Z"), latestVersion: { id: "v1", specId: "1", semver: "1.0.0", checksum: "abc", isPrerelease: false, createdAt: new Date("2026-01-01T00:00:00Z") } },
     ];
     mockFetchJson(200, { data: specs });
 

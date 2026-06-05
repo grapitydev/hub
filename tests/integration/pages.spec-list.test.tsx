@@ -6,7 +6,7 @@ import { BrowserRouter } from "react-router-dom";
 import { ConfigProvider } from "../../src/context/ConfigContext";
 import { ThemeProvider } from "../../src/context/ThemeContext";
 import { SpecListPage } from "../../src/pages/SpecListPage";
-import type { Spec } from "@grapity/core";
+import type { SpecListItem } from "@grapity/core";
 
 function wrapper({ children }: { children: React.ReactNode }) {
   return (
@@ -60,8 +60,29 @@ describe("SpecListPage — / (Browse All Specs)", () => {
   });
 
   test("renders spec cards after successful fetch", async () => {
-    const specs: Spec[] = [
-      { id: "1", name: "payments-api", type: "openapi" as const, tags: ["payments", "public"], createdAt: new Date(), updatedAt: new Date() },
+    const specs: SpecListItem[] = [
+      {
+        id: "1",
+        name: "payments-api",
+        type: "openapi" as const,
+        tags: ["payments", "public"],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        latestVersion: {
+          id: "v1",
+          specId: "1",
+          semver: "1.0.0",
+          checksum: "abc",
+          isPrerelease: false,
+          createdAt: new Date(),
+          compatibility: {
+            previousVersion: "0.0.0",
+            classification: "initial" as const,
+            breakingChanges: [],
+            safeChanges: [],
+          },
+        },
+      },
       { id: "2", name: "users-api", type: "openapi" as const, tags: ["internal"], createdAt: new Date(), updatedAt: new Date() },
     ];
     mockFetchJson({ data: specs });
@@ -69,6 +90,119 @@ describe("SpecListPage — / (Browse All Specs)", () => {
 
     await waitFor(() => {
       expect(screen.getByText("payments-api")).toBeTruthy();
+      expect(screen.getByText("users-api")).toBeTruthy();
+      expect(screen.getByText("1.0.0")).toBeTruthy();
+    });
+  });
+
+  test("filters specs by classification client-side", async () => {
+    const specs: SpecListItem[] = [
+      {
+        id: "1",
+        name: "payments-api",
+        type: "openapi" as const,
+        tags: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        latestVersion: {
+          id: "v1",
+          specId: "1",
+          semver: "1.0.0",
+          checksum: "abc",
+          isPrerelease: false,
+          createdAt: new Date(),
+          compatibility: {
+            previousVersion: "0.0.0",
+            classification: "initial" as const,
+            breakingChanges: [],
+            safeChanges: [],
+          },
+        },
+      },
+      {
+        id: "2",
+        name: "users-api",
+        type: "openapi" as const,
+        tags: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        latestVersion: {
+          id: "v2",
+          specId: "2",
+          semver: "1.1.0",
+          checksum: "def",
+          isPrerelease: false,
+          createdAt: new Date(),
+          compatibility: {
+            previousVersion: "1.0.0",
+            classification: "minor" as const,
+            breakingChanges: [],
+            safeChanges: [{ id: "1", rule: "endpoint-added", description: "Added GET /users", path: "/users", category: "structural" as const }],
+          },
+        },
+      },
+    ];
+    mockFetchJson({ data: specs });
+    render(<SpecListPage filters={{ classification: "major" }} />, { wrapper });
+
+    await waitFor(() => {
+      expect(screen.getByText("payments-api")).toBeTruthy();
+      expect(screen.queryByText("users-api")).toBeNull();
+    });
+  });
+
+  test("filters specs by minor classification client-side", async () => {
+    const specs: SpecListItem[] = [
+      {
+        id: "1",
+        name: "payments-api",
+        type: "openapi" as const,
+        tags: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        latestVersion: {
+          id: "v1",
+          specId: "1",
+          semver: "1.0.0",
+          checksum: "abc",
+          isPrerelease: false,
+          createdAt: new Date(),
+          compatibility: {
+            previousVersion: "0.0.0",
+            classification: "initial" as const,
+            breakingChanges: [],
+            safeChanges: [],
+          },
+        },
+      },
+      {
+        id: "2",
+        name: "users-api",
+        type: "openapi" as const,
+        tags: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        latestVersion: {
+          id: "v2",
+          specId: "2",
+          semver: "1.1.0",
+          checksum: "def",
+          isPrerelease: false,
+          createdAt: new Date(),
+          compatibility: {
+            previousVersion: "1.0.0",
+            classification: "minor" as const,
+            breakingChanges: [],
+            safeChanges: [{ id: "1", rule: "endpoint-added", description: "Added GET /users", path: "/users", category: "structural" as const }],
+          },
+        },
+      },
+    ];
+    mockFetchJson({ data: specs });
+    render(<SpecListPage filters={{ classification: "minor" }} />, { wrapper });
+
+    await waitFor(() => {
+      expect(screen.queryByText("payments-api")).toBeNull();
       expect(screen.getByText("users-api")).toBeTruthy();
     });
   });
@@ -99,8 +233,29 @@ describe("SpecListPage — / (Browse All Specs)", () => {
   });
 
   test("filters specs client-side while typing in search input", async () => {
-    const specs: Spec[] = [
-      { id: "1", name: "payments-api", type: "openapi" as const, tags: ["payments", "public"], createdAt: new Date(), updatedAt: new Date() },
+    const specs: SpecListItem[] = [
+      {
+        id: "1",
+        name: "payments-api",
+        type: "openapi" as const,
+        tags: ["payments", "public"],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        latestVersion: {
+          id: "v1",
+          specId: "1",
+          semver: "1.0.0",
+          checksum: "abc",
+          isPrerelease: false,
+          createdAt: new Date(),
+          compatibility: {
+            previousVersion: "0.0.0",
+            classification: "initial" as const,
+            breakingChanges: [],
+            safeChanges: [],
+          },
+        },
+      },
       { id: "2", name: "users-api", type: "openapi" as const, tags: ["internal"], createdAt: new Date(), updatedAt: new Date() },
     ];
     mockFetchJson({ data: specs });

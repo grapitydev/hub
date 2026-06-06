@@ -64,6 +64,9 @@ export function EndpointCard({ endpoint }: { endpoint: Endpoint }) {
       {endpoint.summary && (
         <p className="text-sm text-text-secondary mb-2">{endpoint.summary}</p>
       )}
+      {endpoint.description && (
+        <p className="text-sm text-text-muted mb-3 max-w-prose whitespace-pre-wrap">{endpoint.description}</p>
+      )}
       {endpoint.parameters.length > 0 && (
         <div className="flex flex-wrap gap-x-3 gap-y-1">
           {endpoint.parameters.map((p) => (

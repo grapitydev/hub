@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 interface BadgeProps {
   children: ReactNode;
-  variant?: "default" | "indigo" | "rose" | "green" | "cyan" | "amber";
+  variant?: "default" | "indigo" | "rose" | "green" | "cyan" | "amber" | "purple";
   className?: string;
 }
 
@@ -14,6 +14,7 @@ export function Badge({ children, variant = "default", className = "" }: BadgePr
     green: "bg-accent-green/10 text-accent-green border border-accent-green/20",
     cyan: "bg-accent-cyan/10 text-accent-cyan",
     amber: "bg-accent-amber/10 text-accent-amber",
+    purple: "bg-accent-purple/10 text-accent-purple",
   };
 
   return (

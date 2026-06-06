@@ -41,7 +41,7 @@
     "provenance": true
   },
   "dependencies": {
-    "@grapity/core": "^0.1.0",
+    "@grapity/core": "^0.3.0",
     "@hono/node-server": "^2.0.4",
     "hono": "^4.12.22",
     "lucide-react": "^0.475.0",

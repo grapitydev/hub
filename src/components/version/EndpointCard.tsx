@@ -36,7 +36,7 @@ function ParamRow({ param }: { param: Endpoint["parameters"][0] }) {
 
 function buildCurl(endpoint: Endpoint): string {
   const url = `${endpoint.serverUrl}${endpoint.path}`;
-  const lines = [`curl -X ${endpoint.method} ${url} \\\n  -H "Content-Type: application/json" \\\n`];
+  const lines = [`curl -X ${endpoint.method} ${url} \\n  -H "Content-Type: application/json" \\\n`];
 
   if (endpoint.exampleRequest) {
     const body = endpoint.exampleRequest.replace(/'/g, "'\\''");
@@ -44,6 +44,14 @@ function buildCurl(endpoint: Endpoint): string {
   }
 
   return lines.join("");
+}
+
+function statusBadgeClass(status: string): string {
+  if (status.startsWith("2")) return "bg-green-500/10 text-green-400";
+  if (status.startsWith("3")) return "bg-blue-500/10 text-blue-400";
+  if (status.startsWith("4")) return "bg-amber-500/10 text-amber-400";
+  if (status.startsWith("5")) return "bg-red-500/10 text-red-400";
+  return "bg-surface-hover text-text-secondary";
 }
 
 export function EndpointCard({ endpoint }: { endpoint: Endpoint }) {
@@ -107,13 +115,7 @@ export function EndpointCard({ endpoint }: { endpoint: Endpoint }) {
                       <div>
                         <div className="flex items-baseline gap-2 mb-1">
                           <span
-                            className={`rounded px-1.5 py-0.5 font-mono text-xs font-semibold ${
-                              resp.status.startsWith("2")
-                                ? "bg-green-500/10 text-green-400"
-                                : resp.status.startsWith("4")
-                                  ? "bg-red-500/10 text-red-400"
-                                  : "bg-surface-hover text-text-secondary"
-                            }`}
+                            className={`rounded px-1.5 py-0.5 font-mono text-xs font-semibold ${statusBadgeClass(resp.status)}`}
                           >
                             {resp.status}
                           </span>
@@ -129,13 +131,7 @@ export function EndpointCard({ endpoint }: { endpoint: Endpoint }) {
                     <>
                       <div className="flex items-baseline gap-2 mb-1">
                         <span
-                          className={`rounded px-1.5 py-0.5 font-mono text-xs font-semibold ${
-                            resp.status.startsWith("2")
-                              ? "bg-green-500/10 text-green-400"
-                              : resp.status.startsWith("4")
-                                ? "bg-red-500/10 text-red-400"
-                                : "bg-surface-hover text-text-secondary"
-                          }`}
+                          className={`rounded px-1.5 py-0.5 font-mono text-xs font-semibold ${statusBadgeClass(resp.status)}`}
                         >
                           {resp.status}
                         </span>

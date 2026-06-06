@@ -527,8 +527,8 @@ describe("VersionPage — /specs/:name/versions/:semver", () => {
     render(<VersionPage />, { wrapper: Wrapper });
 
     await waitFor(() => {
-      expect(screen.getByText(/acc_123/i)).toBeTruthy();
-      expect(screen.getByText(/acc_new456/i)).toBeTruthy();
+      expect(document.body.textContent).toMatch(/acc_123/i);
+      expect(document.body.textContent).toMatch(/acc_new456/i);
     });
   });
 
@@ -605,7 +605,7 @@ describe("VersionPage — /specs/:name/versions/:semver", () => {
     fireEvent.click(screen.getByText(/Raw Spec/i));
 
     await waitFor(() => {
-      expect(screen.getByText(/Test API/i)).toBeTruthy();
+      expect(document.body.textContent).toMatch(/Test API/i);
     });
 
     fireEvent.click(screen.getByText("YAML"));

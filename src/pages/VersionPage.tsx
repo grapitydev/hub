@@ -58,7 +58,7 @@ export function VersionPage() {
       <div>
         <div className="flex items-center gap-3 mb-2">
           <h1 className="font-display text-2xl font-bold text-text-primary">{name}</h1>
-          {spec && <Badge variant="purple">{spec.type}</Badge>}
+          {spec && <Badge variant={spec.type === "openapi" ? "green" : spec.type === "asyncapi" ? "rose" : "default"}>{spec.type}</Badge>}
           <VersionBadge
             semver={version.semver}
             classification={version.compatibility?.classification ?? "initial"}

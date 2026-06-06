@@ -18,7 +18,7 @@ export function SpecCard({ spec, latestVersion }: SpecCardProps) {
       onClick={() => navigate(`/specs/${spec.name}`)}
     >
       <div className="flex items-start justify-between mb-3">
-        <Badge variant="purple">{spec.type}</Badge>
+        <Badge variant={spec.type === "openapi" ? "green" : spec.type === "asyncapi" ? "rose" : "default"}>{spec.type}</Badge>
         {latestVersion && (
           <span className={`inline-flex items-center rounded-md px-2 py-0.5 font-mono text-xs font-bold ${getClassificationPillStyle(latestVersion.classification)}`}>
             {latestVersion.semver}

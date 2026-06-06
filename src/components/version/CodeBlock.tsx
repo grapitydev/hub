@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { CopyButton } from "../ui/CopyButton";
 import { getHighlighter } from "../../lib/shiki";
 
@@ -17,31 +17,60 @@ function formatJson(content: string): string {
   }
 }
 
+function getShikiTheme(): string {
+  return document.documentElement.classList.contains("light")
+    ? "catppuccin-latte"
+    : "catppuccin-mocha";
+}
+
 export function CodeBlock({ content, language, showCopy = true, className = "" }: CodeBlockProps) {
   const [html, setHtml] = useState<string>("");
   const formatted = language === "json" ? formatJson(content) : content;
 
+  const highlight = useCallback(async () => {
+    const highlighter = await getHighlighter();
+    const lang = language === "json" || language === "bash" || language === "yaml" ? language : "text";
+    const result = highlighter.codeToHtml(formatted, {
+      lang,
+      theme: getShikiTheme(),
+    });
+    setHtml(result);
+  }, [formatted, language]);
+
   useEffect(() => {
     let cancelled = false;
 
-    async function highlight() {
+    async function doHighlight() {
       const highlighter = await getHighlighter();
       if (cancelled) return;
 
       const lang = language === "json" || language === "bash" || language === "yaml" ? language : "text";
       const result = highlighter.codeToHtml(formatted, {
         lang,
-        theme: "catppuccin-mocha",
+        theme: getShikiTheme(),
       });
       if (!cancelled) setHtml(result);
     }
 
-    highlight();
+    doHighlight();
 
     return () => {
       cancelled = true;
     };
   }, [formatted, language]);
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      highlight();
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, [highlight]);
 
   return (
     <div className={`relative rounded-md border border-surface-border bg-surface-code ${className}`}>

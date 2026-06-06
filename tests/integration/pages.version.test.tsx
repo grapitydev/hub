@@ -568,6 +568,118 @@ describe("VersionPage — /specs/:name/versions/:semver", () => {
     });
   });
 
+  test("renders deprecated endpoints, parameters, and properties with badges", async () => {
+    const version: PublicSpecVersion = {
+      id: "v1", specId: "1", semver: "1.0.0", checksum: "abc",
+      isPrerelease: false, createdAt: new Date(),
+      compatibility: { classification: "initial", previousVersion: "", breakingChanges: [], safeChanges: [] },
+    };
+
+    const DEPRECATED_OPENAPI_JSON = JSON.stringify({
+      openapi: "3.1.0",
+      info: { title: "Inventory API", version: "1.3.0" },
+      servers: [{ url: "https://api.example.com" }],
+      paths: {
+        "/items/{itemId}": {
+          get: {
+            summary: "Retrieve an item (v2)",
+            parameters: [
+              { name: "itemId", in: "path", required: true, schema: { type: "integer" } },
+              { name: "expand", in: "query", required: false, schema: { type: "string" }, deprecated: true, "x-sunset": "2024-01-01" },
+            ],
+            responses: {
+              "200": {
+                description: "Item details",
+                content: {
+                  "application/json": {
+                    schema: {
+                      type: "object",
+                      properties: {
+                        itemId: { type: "integer" },
+                        name: { type: "string" },
+                        warehouse: { type: "string", deprecated: true, "x-sunset": "2024-01-01" },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        "/items/{id}": {
+          get: {
+            summary: "Retrieve an item (legacy)",
+            deprecated: true,
+            "x-sunset": "2024-01-01",
+            parameters: [
+              { name: "id", in: "path", required: true, schema: { type: "string" } },
+            ],
+            responses: {
+              "200": {
+                description: "Item details (legacy)",
+                content: {
+                  "application/json": {
+                    schema: {
+                      type: "object",
+                      properties: {
+                        id: { type: "string" },
+                        name: { type: "string" },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    global.fetch = (async (input: string | URL | Request) => {
+      const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
+      if (url.includes("/compat/")) {
+        const report: CompatReport = { previousVersion: "", classification: "initial", breakingChanges: [], safeChanges: [] };
+        return new Response(JSON.stringify({ data: report }), { status: 200 });
+      }
+      if (url.includes("/spec.json")) {
+        return new Response(DEPRECATED_OPENAPI_JSON, { status: 200 });
+      }
+      if (url.includes("/spec.yaml")) {
+        return new Response("openapi: 3.1.0\ninfo:\n  title: Inventory API\n", { status: 200 });
+      }
+      if (url.includes("/versions") && !url.includes("/versions/")) {
+        return new Response(JSON.stringify({ data: [version], pagination: { hasMore: false, limit: 10, offset: 0, total: 1 } }), { status: 200 });
+      }
+      if (url.includes("/specs/payments-api") && !url.includes("/versions") && !url.includes("/compat") && !url.includes("/spec.")) {
+        return new Response(JSON.stringify({ data: { spec: TEST_SPEC, latestVersion: version } }), { status: 200 });
+      }
+      return new Response(JSON.stringify({ data: version }), { status: 200 });
+    }) as unknown as typeof globalThis.fetch;
+
+    render(<VersionPage />, { wrapper: Wrapper });
+
+    await waitFor(() => {
+      expect(document.body.textContent).toMatch(/Retrieve an item \(v2\)/);
+    });
+
+    // Endpoint-level deprecation
+    expect(document.body.textContent).toMatch(/This endpoint is deprecated/);
+    expect(document.body.textContent).toMatch(/It will be removed on 2024-01-01/);
+
+    // Deprecated endpoints sorted to bottom (GET /items/{itemId} before GET /items/{id})
+    const content = document.body.textContent;
+    const idxV2 = content.indexOf("Retrieve an item (v2)");
+    const idxLegacy = content.indexOf("Retrieve an item (legacy)");
+    expect(idxV2).toBeLessThan(idxLegacy);
+
+    // Parameter-level deprecation
+    expect(document.body.textContent).toMatch(/expand.*Deprecated/);
+    expect(document.body.textContent).toMatch(/Sunset passed: 2024-01-01/);
+
+    // Property-level deprecation
+    expect(document.body.textContent).toMatch(/warehouse.*Deprecated/);
+  });
+
   test("switches to YAML tab without skeleton flash", async () => {
     const version: PublicSpecVersion = {
       id: "v1", specId: "1", semver: "1.0.0", checksum: "abc",

@@ -50,6 +50,9 @@ function extractSchemaProperties(
     if (!prop || typeof prop !== "object") continue;
     const p = prop as Record<string, unknown>;
 
+    const isDeprecated = Boolean(p.deprecated);
+    const xSunset = p["x-sunset"] ? String(p["x-sunset"]) : undefined;
+
     if (p.$ref) {
       const resolved = resolveRef(spec, String(p.$ref));
       if (resolved) {
@@ -60,6 +63,8 @@ function extractSchemaProperties(
           required: required.has(name),
           description: resolvedObj.description ? String(resolvedObj.description) : undefined,
           properties: extractSchemaProperties(spec, resolved, depth + 1),
+          deprecated: isDeprecated,
+          xSunset,
         });
         continue;
       }
@@ -80,6 +85,8 @@ function extractSchemaProperties(
             required: required.has(name),
             description: p.description ? String(p.description) : undefined,
             properties: extractSchemaProperties(spec, resolved, depth + 1),
+            deprecated: isDeprecated,
+            xSunset,
           });
           continue;
         }
@@ -97,6 +104,8 @@ function extractSchemaProperties(
         description: p.description ? String(p.description) : undefined,
         format: p.format ? String(p.format) : undefined,
         properties: extractSchemaProperties(spec, p, depth + 1),
+        deprecated: isDeprecated,
+        xSunset,
       });
       continue;
     }
@@ -107,6 +116,8 @@ function extractSchemaProperties(
       required: required.has(name),
       description: p.description ? String(p.description) : undefined,
       format: p.format ? String(p.format) : undefined,
+      deprecated: isDeprecated,
+      xSunset,
     });
   }
 
@@ -166,6 +177,8 @@ export function parseOpenAPI(json: string): EndpointGroup[] {
               required: Boolean(param.required),
               in: String(param.in ?? "query"),
               description: param.description ? String(param.description) : undefined,
+              deprecated: Boolean(param.deprecated),
+              xSunset: param["x-sunset"] ? String(param["x-sunset"]) : undefined,
             });
           }
         }
@@ -222,6 +235,8 @@ export function parseOpenAPI(json: string): EndpointGroup[] {
           exampleRequest,
           group,
           id,
+          deprecated: Boolean(op.deprecated),
+          xSunset: op["x-sunset"] ? String(op["x-sunset"]) : undefined,
         });
       }
     }
@@ -239,7 +254,11 @@ export function parseOpenAPI(json: string): EndpointGroup[] {
 
     result.sort((a, b) => a.name.localeCompare(b.name));
     for (const g of result) {
-      g.endpoints.sort((a, b) => a.path.localeCompare(b.path) || a.method.localeCompare(b.method));
+      g.endpoints.sort((a, b) => {
+        if (a.deprecated && !b.deprecated) return 1;
+        if (!a.deprecated && b.deprecated) return -1;
+        return a.path.localeCompare(b.path) || a.method.localeCompare(b.method);
+      });
     }
 
     return result;

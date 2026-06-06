@@ -162,7 +162,14 @@ export function Sidebar({ filters }: SidebarProps) {
                                 >
                                   {ep.method}
                                 </span>
-                                <span className="truncate">{ep.path}</span>
+                                <span className="flex items-center gap-1 min-w-0">
+                                  <span className={`truncate ${ep.deprecated ? "line-through text-text-muted" : ""}`}>
+                                    {ep.path}
+                                  </span>
+                                  {ep.deprecated && (
+                                    <span className="text-text-muted text-[10px] shrink-0">(Deprecated)</span>
+                                  )}
+                                </span>
                               </button>
                             );
                           })}

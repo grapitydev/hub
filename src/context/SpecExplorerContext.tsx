@@ -6,6 +6,8 @@ export interface EndpointParam {
   required: boolean;
   in: string;
   description?: string;
+  deprecated?: boolean;
+  xSunset?: string;
 }
 
 export interface SchemaProperty {
@@ -15,6 +17,8 @@ export interface SchemaProperty {
   description?: string;
   format?: string;
   properties?: SchemaProperty[];
+  deprecated?: boolean;
+  xSunset?: string;
 }
 
 export interface RequestBody {
@@ -41,6 +45,8 @@ export interface Endpoint {
   exampleRequest?: string;
   group: string;
   id: string;
+  deprecated?: boolean;
+  xSunset?: string;
 }
 
 export interface EndpointGroup {

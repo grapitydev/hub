@@ -22,13 +22,31 @@ function MethodBadge({ method }: { method: string }) {
   );
 }
 
+function SunsetLabel({ date }: { date?: string }) {
+  if (!date) return <span className="text-xs text-text-muted">No sunset date scheduled</span>;
+  const d = new Date(date);
+  const isPast = d < new Date();
+  if (isPast) return <span className="text-xs text-accent-rose">Sunset passed: {date}</span>;
+  return <span className="text-xs text-text-muted">Sunset: {date}</span>;
+}
+
 function ParamRow({ param }: { param: Endpoint["parameters"][0] }) {
   return (
-    <span className="inline-flex items-center gap-1 text-xs text-text-secondary">
-      <span className="font-mono text-text-primary">{param.name}</span>
+    <span className="inline-flex items-center gap-1 text-xs text-text-secondary flex-wrap">
+      <span className={`font-mono ${param.deprecated ? "line-through text-text-muted" : "text-text-primary"}`}>
+        {param.name}
+      </span>
       <span className="text-text-muted">({param.type})</span>
       {param.required && (
         <span className="text-accent-rose">*</span>
+      )}
+      {param.deprecated && (
+        <span className="inline-flex items-center rounded-sm px-1.5 py-0.5 text-[10px] font-medium bg-accent-amber/10 text-accent-amber">
+          Deprecated
+        </span>
+      )}
+      {param.deprecated && param.xSunset && (
+        <SunsetLabel date={param.xSunset} />
       )}
     </span>
   );
@@ -36,7 +54,7 @@ function ParamRow({ param }: { param: Endpoint["parameters"][0] }) {
 
 function buildCurl(endpoint: Endpoint): string {
   const url = `${endpoint.serverUrl}${endpoint.path}`;
-  const lines = [`curl -X ${endpoint.method} ${url} \\n  -H "Content-Type: application/json" \\\n`];
+  const lines = [`curl -X ${endpoint.method} ${url} \\n  -H "Content-Type: application/json" \\n`];
 
   if (endpoint.exampleRequest) {
     const body = endpoint.exampleRequest.replace(/'/g, "'\\''");
@@ -56,11 +74,30 @@ function statusBadgeClass(status: string): string {
 
 export function EndpointCard({ endpoint }: { endpoint: Endpoint }) {
   return (
-    <div id={endpoint.id}>
-      <div className="flex items-center gap-3 mb-2">
+    <div id={endpoint.id} className={endpoint.deprecated ? "opacity-70" : undefined}>
+      <div className="flex items-center gap-3 mb-2 flex-wrap">
         <MethodBadge method={endpoint.method} />
-        <code className="font-mono text-sm text-text-primary">{endpoint.path}</code>
+        <code className={`font-mono text-sm ${endpoint.deprecated ? "line-through text-text-muted" : "text-text-primary"}`}>
+          {endpoint.path}
+        </code>
+        {endpoint.deprecated && (
+          <span className="inline-flex items-center rounded-sm px-2 py-0.5 text-xs font-medium bg-accent-amber/10 text-accent-amber">
+            Deprecated
+          </span>
+        )}
       </div>
+      {endpoint.deprecated && (
+        <div className="mb-3 rounded-sm border-l-2 border-accent-amber bg-accent-amber/5 px-3 py-2">
+          <p className="text-sm text-accent-amber">
+            This endpoint is deprecated.
+            {endpoint.xSunset ? (
+              <> It will be removed on <strong>{endpoint.xSunset}</strong>.</>
+            ) : (
+              <> No sunset date is scheduled yet, but migration is strongly recommended.</>
+            )}
+          </p>
+        </div>
+      )}
       {endpoint.summary && (
         <p className="text-sm text-text-secondary mb-2">{endpoint.summary}</p>
       )}

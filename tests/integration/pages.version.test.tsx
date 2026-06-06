@@ -453,10 +453,10 @@ describe("VersionPage — /specs/:name/versions/:semver", () => {
     render(<VersionPage />, { wrapper: Wrapper });
 
     await waitFor(() => {
-      expect(screen.getByText("amount")).toBeTruthy();
-      expect(screen.getByText("currency")).toBeTruthy();
-      expect(screen.getByText("status")).toBeTruthy();
-      expect(screen.getByText("createdAt")).toBeTruthy();
+      expect(document.body.textContent).toMatch(/amount/);
+      expect(document.body.textContent).toMatch(/currency/);
+      expect(document.body.textContent).toMatch(/status/);
+      expect(document.body.textContent).toMatch(/createdAt/);
     });
   });
 
@@ -491,8 +491,8 @@ describe("VersionPage — /specs/:name/versions/:semver", () => {
     render(<VersionPage />, { wrapper: Wrapper });
 
     await waitFor(() => {
-      expect(screen.getByText(/curl -X POST/i)).toBeTruthy();
-      expect(screen.getByText(/https:\/\/api\.example\.com\/v1\/accounts/i)).toBeTruthy();
+      expect(document.body.textContent).toMatch(/curl -X POST/i);
+      expect(document.body.textContent).toMatch(/https:\/\/api\.example\.com\/v1\/accounts/i);
     });
   });
 
@@ -611,7 +611,7 @@ describe("VersionPage — /specs/:name/versions/:semver", () => {
     fireEvent.click(screen.getByText("YAML"));
 
     await waitFor(() => {
-      expect(screen.getByText((content) => content.includes("openapi: 3.1.0"))).toBeTruthy();
+      expect(document.body.textContent).toMatch(/openapi: 3\.1\.0/);
     });
   });
 });

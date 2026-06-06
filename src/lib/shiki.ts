@@ -6,7 +6,7 @@ export function getHighlighter() {
   if (!highlighterPromise) {
     highlighterPromise = createHighlighter({
       themes: ["catppuccin-mocha"],
-      langs: ["json", "bash"],
+      langs: ["json", "bash", "yaml"],
     });
   }
   return highlighterPromise;

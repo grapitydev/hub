@@ -65,7 +65,7 @@ export function EndpointCard({ endpoint }: { endpoint: Endpoint }) {
         <p className="text-sm text-text-secondary mb-2">{endpoint.summary}</p>
       )}
       {endpoint.description && (
-        <p className="text-sm text-text-muted mb-3 whitespace-pre-wrap">{endpoint.description}</p>
+        <p className="text-sm text-text-muted mb-3">{endpoint.description}</p>
       )}
       {endpoint.parameters.length > 0 && (
         <div className="flex flex-wrap gap-x-3 gap-y-1">

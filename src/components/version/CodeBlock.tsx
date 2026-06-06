@@ -28,7 +28,7 @@ export function CodeBlock({ content, language, showCopy = true, className = "" }
       const highlighter = await getHighlighter();
       if (cancelled) return;
 
-      const lang = language === "json" || language === "bash" ? language : "text";
+      const lang = language === "json" || language === "bash" || language === "yaml" ? language : "text";
       const result = highlighter.codeToHtml(formatted, {
         lang,
         theme: "catppuccin-mocha",

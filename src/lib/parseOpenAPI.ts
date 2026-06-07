@@ -43,6 +43,22 @@ function extractSchemaProperties(
     return [];
   }
 
+  // Handle allOf by merging properties from all sub-schemas
+  if (Array.isArray(s.allOf)) {
+    const mergedProperties: SchemaProperty[] = [];
+    const seenNames = new Set<string>();
+    for (const subSchema of s.allOf) {
+      const subProps = extractSchemaProperties(spec, subSchema, depth + 1);
+      for (const prop of subProps) {
+        if (!seenNames.has(prop.name)) {
+          seenNames.add(prop.name);
+          mergedProperties.push(prop);
+        }
+      }
+    }
+    return mergedProperties;
+  }
+
   const required = new Set((s.required as string[]) || []);
   const properties: SchemaProperty[] = [];
 

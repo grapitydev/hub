@@ -116,7 +116,7 @@ export function CodeBlock({ content, language, showCopy = true, className = "" }
           <CopyButton text={formatted} />
         </div>
       )}
-      <div className="overflow-auto max-h-[60vh]">
+      <div className="overflow-auto">
         {isBash ? (
           renderBash(formatted)
         ) : html ? (

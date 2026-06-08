@@ -114,7 +114,7 @@ export function EndpointCard({ endpoint }: { endpoint: Endpoint }) {
 
       <div className="pl-4">
         {endpoint.requestBody && endpoint.exampleRequest && (
-          <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
             <div>
               <h4 className="text-xs font-semibold uppercase tracking-wider text-text-secondary mb-2">
                 Request Body
@@ -151,7 +151,7 @@ export function EndpointCard({ endpoint }: { endpoint: Endpoint }) {
               {endpoint.responses.map((resp) => (
                 <div key={resp.status}>
                   {resp.exampleBody ? (
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
                       <div>
                         <div className="flex items-baseline gap-2 mb-1">
                           <span

@@ -27,6 +27,76 @@ function resolveRef(spec: Record<string, unknown>, ref: string): unknown {
   return current;
 }
 
+function refNameFromPath(ref: string): string {
+  const parts = ref.split("/");
+  return parts[parts.length - 1] || "object";
+}
+
+function formatEnumValues(enumValues: unknown[]): string {
+  const values = enumValues
+    .filter((v): v is string => typeof v === "string")
+    .join(", ");
+  return values ? ` (${values})` : "";
+}
+
+function getSchemaDisplayType(spec: Record<string, unknown>, schema: unknown): string {
+  if (!schema || typeof schema !== "object") return "unknown";
+  const s = schema as Record<string, unknown>;
+  if (s.$ref) {
+    return getRefDisplayType(spec, String(s.$ref));
+  }
+  const type = String(s.type || "");
+  const enumValues = Array.isArray(s.enum) ? s.enum : [];
+
+  if (type && type !== "object" && type !== "array") {
+    return type + formatEnumValues(enumValues);
+  }
+
+  if (type === "array" && s.items) {
+    return `array<${getSchemaDisplayType(spec, s.items)}>`;
+  }
+
+  if (Array.isArray(s.allOf) && s.allOf.length > 0) {
+    const first = s.allOf[0];
+    if (first && typeof first === "object") {
+      const f = first as Record<string, unknown>;
+      if (f.$ref) {
+        return getRefDisplayType(spec, String(f.$ref));
+      }
+    }
+  }
+
+  const title = String(s.title || "");
+  if (title) return title;
+
+  return type || "object";
+}
+
+function getRefDisplayType(spec: Record<string, unknown>, ref: string): string {
+  const resolved = resolveRef(spec, ref);
+  if (!resolved || typeof resolved !== "object") return "unknown";
+  const r = resolved as Record<string, unknown>;
+  const type = String(r.type || "");
+  const enumValues = Array.isArray(r.enum) ? r.enum : [];
+
+  if (type && type !== "object" && type !== "array") {
+    return type + formatEnumValues(enumValues);
+  }
+
+  if (type === "array" && r.items) {
+    const items = r.items as Record<string, unknown>;
+    if (items.$ref) {
+      return `array<${getRefDisplayType(spec, String(items.$ref))}>`;
+    }
+    return `array<${getSchemaDisplayType(spec, items)}>`;
+  }
+
+  const title = String(r.title || "");
+  if (title) return title;
+
+  return refNameFromPath(ref);
+}
+
 function extractSchemaProperties(
   spec: Record<string, unknown>,
   schema: unknown,
@@ -56,6 +126,86 @@ function extractSchemaProperties(
         }
       }
     }
+
+    // Also merge inline properties defined alongside allOf
+    const inlineRequired = new Set((s.required as string[]) || []);
+    for (const [name, prop] of Object.entries(s.properties || {})) {
+      if (!prop || typeof prop !== "object") continue;
+      if (seenNames.has(name)) continue;
+      seenNames.add(name);
+      const p = prop as Record<string, unknown>;
+      const isDeprecated = Boolean(p.deprecated);
+      const xSunset = p["x-sunset"] ? String(p["x-sunset"]) : undefined;
+      if (p.$ref) {
+        const resolved = resolveRef(spec, String(p.$ref));
+        if (resolved) {
+          const resolvedObj = resolved as Record<string, unknown>;
+          const resolvedType = String(resolvedObj.type || "");
+          mergedProperties.push({
+            name,
+            type: getRefDisplayType(spec, String(p.$ref)),
+            required: inlineRequired.has(name),
+            description: resolvedObj.description ? String(resolvedObj.description) : undefined,
+            properties:
+              resolvedType === "object" || resolvedType === "array" || !resolvedType
+                ? extractSchemaProperties(spec, resolved, depth + 1)
+                : undefined,
+            deprecated: isDeprecated,
+            xSunset,
+          });
+          continue;
+        }
+      }
+
+      let type = String(p.type || "unknown");
+      if (type === "array" && p.items) {
+        const items = p.items as Record<string, unknown>;
+        if (items.$ref) {
+          const resolved = resolveRef(spec, String(items.$ref));
+          if (resolved) {
+            type = `array<${getRefDisplayType(spec, String(items.$ref))}>`;
+            mergedProperties.push({
+              name,
+              type,
+              required: inlineRequired.has(name),
+              description: p.description ? String(p.description) : undefined,
+              properties: extractSchemaProperties(spec, resolved, depth + 1),
+              deprecated: isDeprecated,
+              xSunset,
+            });
+            continue;
+          }
+          type = `array<${getSchemaDisplayType(spec, items)}>`;
+        } else {
+          type = `array<${getSchemaDisplayType(spec, items)}>`;
+        }
+      }
+
+      if ((type === "object" || p.properties) && p.properties) {
+        mergedProperties.push({
+          name,
+          type,
+          required: inlineRequired.has(name),
+          description: p.description ? String(p.description) : undefined,
+          format: p.format ? String(p.format) : undefined,
+          properties: extractSchemaProperties(spec, p, depth + 1),
+          deprecated: isDeprecated,
+          xSunset,
+        });
+        continue;
+      }
+
+      mergedProperties.push({
+        name,
+        type,
+        required: inlineRequired.has(name),
+        description: p.description ? String(p.description) : undefined,
+        format: p.format ? String(p.format) : undefined,
+        deprecated: isDeprecated,
+        xSunset,
+      });
+    }
+
     return mergedProperties;
   }
 
@@ -73,16 +223,44 @@ function extractSchemaProperties(
       const resolved = resolveRef(spec, String(p.$ref));
       if (resolved) {
         const resolvedObj = resolved as Record<string, unknown>;
+        const resolvedType = String(resolvedObj.type || "");
         properties.push({
           name,
-          type: String(resolvedObj.title || "object"),
+          type: getRefDisplayType(spec, String(p.$ref)),
           required: required.has(name),
           description: resolvedObj.description ? String(resolvedObj.description) : undefined,
-          properties: extractSchemaProperties(spec, resolved, depth + 1),
+          properties:
+            resolvedType === "object" || resolvedType === "array" || !resolvedType
+              ? extractSchemaProperties(spec, resolved, depth + 1)
+              : undefined,
           deprecated: isDeprecated,
           xSunset,
         });
         continue;
+      }
+    }
+
+    // allOf with a leading $ref should borrow the type name from the ref
+    if (Array.isArray(p.allOf) && p.allOf.length > 0) {
+      const first = p.allOf[0];
+      if (first && typeof first === "object") {
+        const f = first as Record<string, unknown>;
+        if (f.$ref) {
+          const resolved = resolveRef(spec, String(f.$ref));
+          if (resolved) {
+            const resolvedObj = resolved as Record<string, unknown>;
+            properties.push({
+              name,
+              type: getRefDisplayType(spec, String(f.$ref)),
+              required: required.has(name),
+              description: resolvedObj.description ? String(resolvedObj.description) : undefined,
+              properties: extractSchemaProperties(spec, p, depth + 1),
+              deprecated: isDeprecated,
+              xSunset,
+            });
+            continue;
+          }
+        }
       }
     }
 
@@ -93,8 +271,7 @@ function extractSchemaProperties(
       if (items.$ref) {
         const resolved = resolveRef(spec, String(items.$ref));
         if (resolved) {
-          const resolvedObj = resolved as Record<string, unknown>;
-          type = `array<${resolvedObj.title || "object"}>`;
+          type = `array<${getRefDisplayType(spec, String(items.$ref))}>`;
           properties.push({
             name,
             type,
@@ -106,9 +283,9 @@ function extractSchemaProperties(
           });
           continue;
         }
-        type = `array<${items.type || "unknown"}>`;
+        type = `array<${getSchemaDisplayType(spec, items)}>`;
       } else {
-        type = `array<${items.type || "unknown"}>`;
+        type = `array<${getSchemaDisplayType(spec, items)}>`;
       }
     }
 
@@ -138,6 +315,15 @@ function extractSchemaProperties(
   }
 
   return properties;
+}
+
+function resolveParamSchemaType(spec: Record<string, unknown>, schema: unknown): string {
+  if (!schema || typeof schema !== "object") return "unknown";
+  const s = schema as Record<string, unknown>;
+  if (s.$ref) {
+    return getRefDisplayType(spec, String(s.$ref));
+  }
+  return String(s.type || "unknown");
 }
 
 function extractExample(content: Record<string, unknown> | undefined): string | undefined {
@@ -187,9 +373,7 @@ export function parseOpenAPI(json: string): EndpointGroup[] {
             const param = p as Record<string, unknown>;
             parameters.push({
               name: String(param.name ?? ""),
-              type: String(param.schema && typeof param.schema === "object"
-                ? (param.schema as Record<string, unknown>).type ?? "unknown"
-                : "unknown"),
+              type: resolveParamSchemaType(spec, param.schema),
               required: Boolean(param.required),
               in: String(param.in ?? "query"),
               description: param.description ? String(param.description) : undefined,

@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.4.0](https://github.com/grapitydev/hub/compare/v0.3.0...v0.4.0) (2026-06-08)
+
+
+### Features
+
+* improve schema parser accuracy for $ref, allOf, enums, and arrays ([3c4c567](https://github.com/grapitydev/hub/commit/3c4c56714538dc89ec9a3b482d63d21a0910118d))
+
+
+### Bug Fixes
+
+* **deps:** update dependency @grapity/core to ^0.4.0 ([f3bfc7d](https://github.com/grapitydev/hub/commit/f3bfc7d88759f498fbe1172e4687a5b2f5428e7d))
+* **deps:** update dependency @grapity/core to ^0.4.0 ([1b4a30b](https://github.com/grapitydev/hub/commit/1b4a30b0ff3f85b5a13ce546881eefba3576d69f))
+* remove max-height from code blocks and add allOf schema parsing ([e013491](https://github.com/grapitydev/hub/commit/e013491859ec417b34129aa4c5250ee5f2f77b4a))
+
 ## [0.3.0](https://github.com/grapitydev/hub/compare/v0.2.0...v0.3.0) (2026-06-06)
 
 

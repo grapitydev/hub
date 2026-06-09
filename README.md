@@ -25,7 +25,7 @@ npm install -g @grapity/cli @grapity/registry @grapity/hub
 
 ### With the CLI (recommended)
 
-The Hub starts automatically alongside the Registry:
+When using `grapity serve`, the Hub starts automatically alongside the Registry:
 
 ```bash
 grapity serve                    # Registry on :3750, Hub on :3000

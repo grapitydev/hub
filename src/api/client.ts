@@ -5,6 +5,7 @@ import type {
   ListVersionsResponse,
   GetVersionResponse,
   GetCompatReportResponse,
+  CompareVersionsResponse,
 } from "@grapity/core";
 
 export type SpecFilters = {
@@ -74,6 +75,11 @@ export function useApiClient() {
 
     getCompatReport: async (name: string, semver: string) => {
       const res = await request<GetCompatReportResponse>("GET", `/v1/specs/${name}/compat/${semver}`);
+      return res.data;
+    },
+
+    compareVersions: async (name: string, from: string, to: string) => {
+      const res = await request<CompareVersionsResponse>("GET", `/v1/specs/${name}/compare?from=${from}&to=${to}`);
       return res.data;
     },
 

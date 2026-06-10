@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.0](https://github.com/grapitydev/hub/compare/v0.4.0...v0.5.0) (2026-06-10)
+
+
+### Features
+
+* clarify hub auto-start only via grapity serve ([5cd4c39](https://github.com/grapitydev/hub/commit/5cd4c3923d88c64d0722e25463e20b47be27b453))
+* redesign CompareTab and DiffPage with incremental timeline ([5b27d47](https://github.com/grapitydev/hub/commit/5b27d47fc7092d06176954e7abb872102169603c))
+
 ## [0.4.0](https://github.com/grapitydev/hub/compare/v0.3.0...v0.4.0) (2026-06-08)
 
 
